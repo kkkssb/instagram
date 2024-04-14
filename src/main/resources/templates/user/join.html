@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>instagram</title>
+</head>
+<style>
+    .main {
+            width: 350px;
+            /* height: 100%; */
+            border: 1px solid #ced4da;
+            margin: auto;
+            padding-top: 40px;
+      }
+
+      .top {
+            margin: auto;
+            padding-bottom: 20px;
+            text-align: center;
+            background-image: url("https://static.cdninstagram.com/rsrc.php/v3/yh/r/IS7e616CiR2.png");
+            /* background-position: 0px 0px; */
+            background-size: 176px 258px;
+            width: 175px;
+            height: 51px;
+            background-repeat: no-repeat;
+            /* display: inline-block; */
+      }
+
+      .box {
+            text-align: center;
+            margin: 7px;
+      }
+
+      input:focus{
+            outline: 0.1px solid #adb5bd;
+      }
+      .box input {
+            width: 270px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            color: #ced4da;
+            caret-color: black;
+      }
+
+      .btn{
+            padding-top: 30px;
+      }
+      .btn input {
+            padding: 3px;
+            height: 30px;
+            border: 1px solid #64b5f6;
+            border-radius: 7px;
+            background-color: #64b5f6;
+            color: white;
+            cursor:pointer;
+      }
+</style>
+<body>
+<div class="main">
+    <div class="top" >
+    </div>
+    <form name="joinForm" action="/user/join" method="post" enctype="multipart/form-data">
+        <div class="box"><input type="text" name="phoneNumber" placeholder="휴대폰번호"></div>
+        <div class="box"><input type="text" name="name" placeholder="성명"></div>
+        <div class="box"><input type="text" name="nickName" placeholder="사용자 이름"></div>
+        <div class="box"><input type="text" name="password" placeholder="비밀번호"></div>
+        <div class="box btn"><input type="submit" value="가입하기"></div>
+    </form>
+</div>
+</body>
+</html>
