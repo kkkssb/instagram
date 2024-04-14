@@ -2,6 +2,7 @@ package com.ex.demo.controller;
 
 import com.ex.demo.domain.dto.UserDTO;
 import com.ex.demo.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,32 @@ public class UserController {
         Long idx = 0L;
         if(userService.join(userDTO)){
             System.out.println("afaf");
-            return "redirect:/user/join";
+            return "redirect:/user/login";
         }
         System.out.println("a");
 
         return "redirect:/user/join";
 
+    }
+    @GetMapping("login")
+    public String login(){
+        return "/user/login";
+    }
+
+    @PostMapping("login")
+    public String login(int phoneNumber, String password, HttpServletRequest req) {
+        UserDTO loginUser= userService.login(phoneNumber,password);
+        if(loginUser!=null){
+            req.getSession().setAttribute("loginUser",loginUser.getNickName());
+            return "redirect:/user/mypage";
+        }
+        System.out.println("a");
+
+        return "redirect:/user/join";
+    }
+    @GetMapping("mypage")
+    public String mypage(){
+        return "/user/mypage";
     }
 
 }

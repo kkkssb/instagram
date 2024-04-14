@@ -2,6 +2,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ex.demo.mapper.UserMapper">
     <insert id="insertUser">
-        insert into User (phoneNumber,name,nickName,password) values(#{phoneNumber},#{name},#{nickName},#{password})
+        insert into user (phoneNumber,name,nickName,password) values(#{phoneNumber},#{name},#{nickName},#{password})
     </insert>
+    <select id="login">
+        select * from user where phoneNumber=#{phoneNumber} and password=#{password}
+    </select>
 </mapper>

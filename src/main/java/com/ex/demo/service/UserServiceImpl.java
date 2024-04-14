@@ -13,4 +13,9 @@ public class UserServiceImpl implements UserService{
     public boolean join(UserDTO userDTO) {
         return userMapper.insertUser(userDTO)==1;
     }
+
+    @Override
+    public UserDTO login(int phoneNumber, String password) {
+        return userMapper.login(phoneNumber,password);
+    }
 }
