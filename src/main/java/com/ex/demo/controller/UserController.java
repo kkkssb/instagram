@@ -5,6 +5,7 @@ import com.ex.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,8 +49,15 @@ public class UserController {
         return "redirect:/user/join";
     }
     @GetMapping("mypage")
-    public String mypage(){
+    public String mypage(HttpServletRequest req, Model model){
+        // 세션에서 loginUser 속성을 가져와서 닉네임을 읽어옵니다.
+        String nickName = (String) req.getSession().getAttribute("loginUser");
+
+        // 닉네임을 모델에 추가하여 마이페이지로 전달합니다.
+        model.addAttribute("nickName", nickName);
+
         return "/user/mypage";
     }
+
 
 }
