@@ -8,4 +8,6 @@ public interface UserMapper {
     int insertUser(UserDTO userDTO);
 
     UserDTO login(int phoneNumber, String password);
+
+    UserDTO findById(String name);
 }

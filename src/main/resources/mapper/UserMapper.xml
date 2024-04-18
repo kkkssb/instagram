@@ -7,4 +7,7 @@
     <select id="login">
         select * from user where phoneNumber=#{phoneNumber} and password=#{password}
     </select>
+    <select id="findById">
+        select * from user where name=#{name}
+    </select>
 </mapper>

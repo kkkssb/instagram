@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>img</title>
+</head>
+<style>
+    .th{
+    width:100px;
+    height:100px;
+    }
+</style>
+<body>
+<img th:src="@{/user/getImg (loginUser=${session.loginUser})}" class="th">
+</body>
+</html>
