@@ -7,4 +7,7 @@
     <select id="getFiles">
         select * from userfile where name=#{name}
     </select>
+    <update id="updateFile">
+        update userfile set systemname=#{systemname}, orgname=#{orgname} where name=#{name}
+    </update>
 </mapper>

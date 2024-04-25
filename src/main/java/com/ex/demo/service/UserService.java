@@ -13,5 +13,7 @@ public interface UserService {
     UserDTO login(int phoneNumber, String password);
     boolean insertFile(MultipartFile[] files,String name) throws IOException;
     public ResponseEntity<Resource> forProfile(String name) throws IOException;
-
+    UserDTO userInfo(String name);
+    boolean modify(UserDTO userDTO);
+    boolean updateFile(MultipartFile[] files,String name)throws IOException;
 }

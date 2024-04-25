@@ -10,4 +10,5 @@ public interface UserMapper {
     UserDTO login(int phoneNumber, String password);
 
     UserDTO findById(String name);
+    int modify(UserDTO userDTO);
 }

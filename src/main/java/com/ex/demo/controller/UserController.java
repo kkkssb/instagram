@@ -9,9 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -46,6 +44,7 @@ public class UserController {
     @PostMapping("login")
     public String login(int phoneNumber, String password, HttpServletRequest req) {
         UserDTO loginUser= userService.login(phoneNumber,password);
+        System.out.println(loginUser);
         if(loginUser!=null){
             req.getSession().setAttribute("loginUser",loginUser.getName());
             return "redirect:/user/mypage";
@@ -54,15 +53,15 @@ public class UserController {
 
         return "redirect:/user/join";
     }
-    @GetMapping("mypage")
-    public String mypage(HttpServletRequest req, Model model){
+    @GetMapping("modify")
+    public String modify(HttpServletRequest req, Model model){
         // 세션에서 loginUser 속성을 가져와서 닉네임을 읽어옵니다.
         String Name = (String) req.getSession().getAttribute("loginUser");
 
         // 닉네임을 모델에 추가하여 마이페이지로 전달합니다.
         model.addAttribute("nickName", Name);
 
-        return "/user/mypage";
+        return "/user/modify";
     }
     @PostMapping("profile")
     public String profile(HttpServletRequest req,MultipartFile[] files)throws Exception{
@@ -80,9 +79,34 @@ public class UserController {
         System.out.println("user controller - getProfileImage/"+name);
         return userService.forProfile(name);
     }
-    @GetMapping("img")
-    public String img(){
-        return "/user/img";
+    @GetMapping("mypage")
+    public String mypage(HttpServletRequest req,Model model){
+        String nickName = (String) req.getSession().getAttribute("loginUser");
+        UserDTO user=userService.userInfo(nickName);
+        model.addAttribute("user", user);
+        return "/user/mypage";
     }
 
+    @GetMapping("modify2")
+    public String modify2(HttpServletRequest req,Model model){
+        String nickName = (String) req.getSession().getAttribute("loginUser");
+        UserDTO user=userService.userInfo(nickName);
+        model.addAttribute("user", user);
+        return "/user/modify2";
+    }
+    @PostMapping("modify2/{idx}")
+    public String modify22(@PathVariable("idx") Long idx,UserDTO userDTO,MultipartFile[] files,HttpServletRequest req)throws IOException{
+        System.out.println(userDTO);
+        if(userService.modify(userDTO)){
+            String name = (String) req.getSession().getAttribute("loginUser");
+            if(userService.updateFile(files,name)){
+                System.out.println("update성공");
+                return "redirect:/user/mypage";
+            }
+            System.out.println("here");
+            return "redirect:/user/mypage";
+        }
+        return "redirect:/user/mypage";
+    }
 }
+

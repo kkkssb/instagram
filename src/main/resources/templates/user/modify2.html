@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .top1 {
+          margin: auto;
+          border: 1px solid black;
+          width: 300px;
+    }
+
+    .box {
+          margin: 10px;
+          /* padding: 10px; */
+          text-align: center;
+          /* border: 1px solid black; */
+    }
+
+    .box>img {
+          width: 100px;
+          height: 100px;
+          border: 1px solid black;
+          border-radius: 50%;
+    }
+
+    .box input {
+          padding: 15px;
+          width: 250px;
+          border: none;
+          border-radius: 15px;
+          background-color: #e9ecef;
+          font-size: 20px;
+          color: gray;
+    }
+
+    input:focus {
+          outline: 0.1px solid #adb5bd;
+    }
+
+    p {
+          padding-left: 10px;
+          font-size: 17px;
+          font-weight: bold;
+    }
+    .btn{
+          margin: 20px;
+          text-align: right;
+    }
+    .btn input{
+          width: 100px;
+          height: 35px;
+          padding: 5px;
+          font-size: 15px;
+          background-color: #e9ecef;
+          border: 1px solid gray;
+          border-radius: 10px;
+          cursor: pointer;
+    }
+    .thumbnail{
+    width:100px;
+    height:100px;
+    }
+</style>
+
+<body>
+<div id="wrap">
+    <section>
+        <div class="top1">
+            <form id="boardForm" method="post" name="boardForm" th:action="@{/user/modify2/{idx}(idx=${user.idx})}"
+                  enctype="multipart/form-data">
+                <p>프로필 수정</p>
+                <div class="box">
+                    <img id="imgg" th:src="@{/user/getImg (loginUser=${session.loginUser})}">
+                    <table>
+                    <tr class="r0 at">
+                        <th>파일 첨부1</th>
+                        <td class="file0_cont" colspan="3">
+                            <div class="m_file">
+                                <input type="file" name="files" id="file0" style="display:none">
+                                <span id="file0name">선택된 파일 없음</span>
+                                <a href="javascript:upload('file0')">파일 선택</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </table>
+                </div>
+                <p>닉네임 수정</p>
+                <div class="box">
+                    <input type="text" name="nickName" th:value="${user.getNickName()}">
+                </div>
+                <p>핸드폰 번호</p>
+                <div class="box">
+                    <input type="text" name="phoneNumber" th:value="${user.getPhoneNumber()}">
+                </div>
+                <div class="btn">
+                    <input type="hidden" th:value="${user.getIdx()}">
+                    <input type="submit" value="등록하기">
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    let i = 0;
+     function upload(name) {
+         $("#" + name).click();
+     }
+     //$(선택자).change(함수) : 해당 선택자의 요소에 변화가 일어난다면 넘겨주는 함수 호출
+     $("[type='file']").change(function (e) {
+         //e : 파일이 업로드된 상황 자체를 담고있는 객체
+         //e.target : 파일이 업로드가 된 input[type=file] 객체(태그객체)
+         //e.target.files : 파일태그에 업로드를 한 파일 객체들의 배열
+         const file = e.target.files[0];
+         const fileTag = e.target;
+
+         if (file == undefined) {
+             //파일이 업로드 되었다가 없어진 경우
+             cancelFile(fileTag.id);
+         }
+         else {
+             //파일이 없었다가 업로드 한 경우
+             //#file0name
+             $("#" + fileTag.id + "name").text(file.name);
+             //업로드 된 파일의 확장자명
+             let ext = file.name.split(".").pop();
+             if (ext == 'jpeg' || ext == 'jpg' || ext == 'png' || ext == 'gif' || ext == 'webp') {
+                 $("." + fileTag.id + "_cont .thumbnail").remove();
+                 const reader = new FileReader();
+
+                 reader.onload = function (ie) {
+                     const img = document.getElementById("imgg");
+                     img.setAttribute("src", ie.target.result)
+                 }
+                 reader.readAsDataURL(file);
+             }
+             else {
+                 const temp = $("." + fileTag.id + "_cont .thumbnail");
+                 if (temp != null) {
+                     temp.remove();
+                 }
+             }
+             //가장 마지막 파일 선택 버튼을 눌렀을 때
+
+         }
+     })
+
+</script>
+</html>

@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -122,6 +123,65 @@ public class UserServiceImpl implements UserService{
         System.out.println("path: "+path);
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+    }
+
+    @Override
+    public UserDTO userInfo(String name) {
+        return userMapper.findById(name);
+    }
+
+    @Override
+    public boolean modify(UserDTO userDTO) {
+        return userMapper.modify(userDTO)==1;
+    }
+
+    @Override
+    public boolean updateFile(MultipartFile[] files,String name) throws IOException {
+        List<UserFileDTO> org_file_list = userFileMapper.getFiles(name);
+        if(org_file_list.size()==0 && (files == null || files.length == 0)) {
+            return true;
+        }
+        else {
+            if (files != null) {
+                boolean flag = false;
+                //후에 비즈니스 로직 실패 시 원래대로 복구하기 위해 업로드 성공했던 파일들도 삭제해주어야 한다.
+                //업로드 성공한 파일들의 이름을 해당 리스트에 추가하면서 로직을 진행한다.
+                ArrayList<String> sysnames = new ArrayList<>();
+                System.out.println("service : " + files.length);
+                for (int i = 0; i < files.length; i++) {
+                    MultipartFile file = files[i];
+                    String orgname = file.getOriginalFilename();
+                    System.out.println(orgname);
+                    //수정의 경우 중간에 있는 파일은 수정이 되지 않은 경우도 있다.
+                    //그런 경우의 file의 orgname은 null 이거나 "" 이다.
+                    //따라서 업로드가 될 필요가 없으므로 continue로 다음 파일로 넘어간다.
+                    if (orgname == null || orgname.equals("")) {
+                        continue;
+                    }
+                    int lastIdx = orgname.lastIndexOf(".");
+                    String extension = orgname.substring(lastIdx);
+                    LocalDateTime now = LocalDateTime.now();
+                    String time = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+                    String systemname = time + UUID.randomUUID().toString() + extension;
+                    sysnames.add(systemname);
+
+                    String path = saveFolder + systemname;
+                    UserFileDTO fdto = new UserFileDTO();
+                    fdto.setSystemname(systemname);
+                    fdto.setOrgname(orgname);
+                    fdto.setName(name);
+                    System.out.println("new file"+fdto);
+                    file.transferTo(new File(path));
+
+                    flag = userFileMapper.updateFile(fdto) == 1;
+                    if (!flag) {
+                        break;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 
 }

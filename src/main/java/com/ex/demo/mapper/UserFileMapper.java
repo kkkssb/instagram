@@ -12,5 +12,6 @@ public interface UserFileMapper {
     int insertFile(UserFileDTO fdto);
     List<UserFileDTO> getFiles(String name);
 
+    int updateFile(UserFileDTO fdto);
 
 }

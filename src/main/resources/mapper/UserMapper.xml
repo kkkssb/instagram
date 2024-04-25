@@ -10,4 +10,7 @@
     <select id="findById">
         select * from user where name=#{name}
     </select>
+    <update id="modify">
+        update user set phoneNumber=#{phoneNumber}, nickName=#{nickName} where idx=#{idx};
+    </update>
 </mapper>
