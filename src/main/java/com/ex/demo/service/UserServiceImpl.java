@@ -45,89 +45,100 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean insertFile(MultipartFile[] files,String name) throws IOException {
-        int row = 1;
-        if(row != 1) {
-            System.out.println("row");
-            return false;
-        }
-        if(files == null || files.length == 0) {
-            System.out.println("empty");
-            return true;
-        }
-        else {
-            //방금 등록한 게시글 번호
-            System.out.println("habe");
-            boolean flag = false;
-            System.out.println(name);
-            System.out.println(files.length);
-            for(int i=0;i<files.length;i++) {
-                System.out.println("habe23");
-                MultipartFile file = files[i];
-                //apple.png
-                String orgname = file.getOriginalFilename();
-                System.out.println(orgname);
-                System.out.println("habe3");
-
-                //5
-                int lastIdx = orgname.lastIndexOf(".");
-                System.out.println(lastIdx);
-                //.png
-                String extension = orgname.substring(lastIdx);
-
-                LocalDateTime now = LocalDateTime.now();
-                String time = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
-
-                //20231005103911237랜덤문자열.png
-                String systemname = time+ UUID.randomUUID().toString()+extension;
-                System.out.println(systemname);
-
-                //실제 저장될 파일의 경로
-                String path = saveFolder+systemname;
-
-                UserFileDTO fdto = new UserFileDTO();
-                fdto.setSystemname(systemname);
-                fdto.setOrgname(orgname);
-                fdto.setName(name);
-
-                //실제 파일 업로드
-                file.transferTo(new File(path));
-                System.out.println("last");
-                System.out.println(fdto);
-
-                flag = userFileMapper.insertFile(fdto) == 1;
-
+    public boolean insertFile(Long idx) throws IOException {
+        boolean flag = false;
+        UserFileDTO fdto = new UserFileDTO();
+                fdto.setSystemname("systemname");
+                fdto.setOrgname("orgname");
+                fdto.setIdx(idx);
+        flag = userFileMapper.insertFile(fdto) == 1;
+        System.out.println(fdto);
                 if(!flag) {
                     //업로드 했던 파일 삭제, 게시글 데이터 삭제
                     return flag;
                 }
-            }
-        }
         return true;
     }
+
+    //    @Override
+//    public boolean insertFile(MultipartFile[] files,String name) throws IOException {
+//        int row = 1;
+//        if(row != 1) {
+//            System.out.println("row");
+//            return false;
+//        }
+//        if(files == null || files.length == 0) {
+//            System.out.println("empty");
+//            return true;
+//        }
+//        else {
+//            boolean flag = false;
+//            for(int i=0;i<files.length;i++) {
+//                MultipartFile file = files[i];
+//
+//                String orgname = file.getOriginalFilename();
+//
+//                int lastIdx = orgname.lastIndexOf(".");
+//
+//                String extension = orgname.substring(lastIdx);
+//
+//                LocalDateTime now = LocalDateTime.now();
+//                String time = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+//
+//                //20231005103911237랜덤문자열.png
+//                String systemname = time+ UUID.randomUUID().toString()+extension;
+//                System.out.println(systemname);
+//
+//                //실제 저장될 파일의 경로
+//                String path = saveFolder+systemname;
+//
+//                UserFileDTO fdto = new UserFileDTO();
+//                fdto.setSystemname(systemname);
+//                fdto.setOrgname(orgname);
+//                fdto.setName(name);
+//
+//                //실제 파일 업로드
+//                file.transferTo(new File(path));
+//
+//                flag = userFileMapper.insertFile(fdto) == 1;
+//
+//                if(!flag) {
+//                    //업로드 했던 파일 삭제, 게시글 데이터 삭제
+//                    return flag;
+//                }
+//            }
+//        }
+//        return true;
+//    }
     @Override
-    public ResponseEntity<Resource> forProfile(String name) throws IOException {
-        UserDTO user = userMapper.findById(name);
+    public ResponseEntity<Resource> forProfile(String nickName) throws IOException {
+        UserDTO user = userMapper.findById(nickName);
         if(user == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        List<UserFileDTO> files = userFileMapper.getFiles(user.getName());
+
+        List<UserFileDTO> files = userFileMapper.getFiles(user.getIdx());
+
         if(files == null || files.size()==0) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         int lastIndex = files.size() - 1;
         String systemname = files.get(lastIndex).getSystemname();
+        if("systemname".equals(systemname)) {
+        return new ResponseEntity<>(HttpStatus.OK);
+        }
         Path path = Paths.get(saveFolder + systemname);
         String contentType = Files.probeContentType(path);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, contentType);
         Resource resource = new InputStreamResource(Files.newInputStream(path));
+        System.out.println(systemname);
         System.out.println("path: "+path);
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
     @Override
-    public UserDTO userInfo(String name) {
-        return userMapper.findById(name);
+    public UserDTO userInfo(String nickName) {
+        return userMapper.findById(nickName);
     }
 
     @Override
@@ -136,8 +147,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean updateFile(MultipartFile[] files,String name) throws IOException {
-        List<UserFileDTO> org_file_list = userFileMapper.getFiles(name);
+    public boolean updateFile(MultipartFile[] files,Long idx) throws IOException {
+        List<UserFileDTO> org_file_list = userFileMapper.getFiles(idx);
         if(org_file_list.size()==0 && (files == null || files.length == 0)) {
             return true;
         }
@@ -169,8 +180,7 @@ public class UserServiceImpl implements UserService{
                     UserFileDTO fdto = new UserFileDTO();
                     fdto.setSystemname(systemname);
                     fdto.setOrgname(orgname);
-                    fdto.setName(name);
-                    System.out.println("new file"+fdto);
+                    fdto.setIdx(idx);
                     file.transferTo(new File(path));
 
                     flag = userFileMapper.updateFile(fdto) == 1;
@@ -182,6 +192,11 @@ public class UserServiceImpl implements UserService{
 
             return true;
         }
+    }
+
+    @Override
+    public UserFileDTO userfileInfo(Long idx) {
+        return userFileMapper.fileInfo(idx);
     }
 
 }

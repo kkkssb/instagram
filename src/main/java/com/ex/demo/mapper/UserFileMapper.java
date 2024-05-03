@@ -10,8 +10,9 @@ import java.util.List;
 @Mapper
 public interface UserFileMapper {
     int insertFile(UserFileDTO fdto);
-    List<UserFileDTO> getFiles(String name);
+    List<UserFileDTO> getFiles(Long idx);
 
     int updateFile(UserFileDTO fdto);
+    UserFileDTO fileInfo(Long idx);
 
 }

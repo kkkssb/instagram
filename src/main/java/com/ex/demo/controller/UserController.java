@@ -25,14 +25,14 @@ public class UserController {
         return "/user/join";
     }
     @PostMapping("join")
-    public String join(UserDTO userDTO) {
+    public String join(UserDTO userDTO) throws IOException {
         Long idx = 0L;
         if(userService.join(userDTO)){
-            System.out.println("afaf");
+            UserDTO user=userService.userInfo(userDTO.getNickName());
+            userService.insertFile(user.getIdx());
+            System.out.println("회원가입 성공");
             return "redirect:/user/login";
         }
-        System.out.println("a");
-
         return "redirect:/user/join";
 
     }
@@ -44,30 +44,19 @@ public class UserController {
     @PostMapping("login")
     public String login(int phoneNumber, String password, HttpServletRequest req) {
         UserDTO loginUser= userService.login(phoneNumber,password);
-        System.out.println(loginUser);
         if(loginUser!=null){
-            req.getSession().setAttribute("loginUser",loginUser.getName());
+            req.getSession().setAttribute("loginUser",loginUser.getNickName());
             return "redirect:/user/mypage";
         }
-        System.out.println("a");
-
         return "redirect:/user/join";
     }
-    @GetMapping("modify")
-    public String modify(HttpServletRequest req, Model model){
-        // 세션에서 loginUser 속성을 가져와서 닉네임을 읽어옵니다.
-        String Name = (String) req.getSession().getAttribute("loginUser");
 
-        // 닉네임을 모델에 추가하여 마이페이지로 전달합니다.
-        model.addAttribute("nickName", Name);
-
-        return "/user/modify";
-    }
     @PostMapping("profile")
     public String profile(HttpServletRequest req,MultipartFile[] files)throws Exception{
-        String name = (String) req.getSession().getAttribute("loginUser");
-        if(userService.insertFile(files,name)){
-            System.out.println("afaf");
+        String nickName = (String) req.getSession().getAttribute("loginUser");
+        UserDTO user=userService.userInfo(nickName);
+        if(userService.insertFile(user.getIdx())){
+            System.out.println("프로필 등록 완료!");
             return "redirect:/user/mypage";
         }
         return "redirect:/user/mypage";
@@ -75,36 +64,33 @@ public class UserController {
     //프로필
     @GetMapping("/getImg")
     public ResponseEntity<Resource> getProfileImage(HttpServletRequest req,String loginUser) throws IOException {
-        String name = (String) req.getSession().getAttribute("loginUser");
-        System.out.println("user controller - getProfileImage/"+name);
-        return userService.forProfile(name);
+        String nickName = (String) req.getSession().getAttribute("loginUser");
+        return userService.forProfile(nickName);
     }
     @GetMapping("mypage")
     public String mypage(HttpServletRequest req,Model model){
         String nickName = (String) req.getSession().getAttribute("loginUser");
         UserDTO user=userService.userInfo(nickName);
+        UserFileDTO userfile = userService.userfileInfo(user.getIdx());
         model.addAttribute("user", user);
+        model.addAttribute("userfile", userfile);
         return "/user/mypage";
     }
 
-    @GetMapping("modify2")
+    @GetMapping("modify")
     public String modify2(HttpServletRequest req,Model model){
-        String nickName = (String) req.getSession().getAttribute("loginUser");
-        UserDTO user=userService.userInfo(nickName);
+        String phoneNumber = (String) req.getSession().getAttribute("loginUser");
+        UserDTO user=userService.userInfo(phoneNumber);
         model.addAttribute("user", user);
-        return "/user/modify2";
+        return "/user/modify";
     }
-    @PostMapping("modify2/{idx}")
-    public String modify22(@PathVariable("idx") Long idx,UserDTO userDTO,MultipartFile[] files,HttpServletRequest req)throws IOException{
-        System.out.println(userDTO);
+    @PostMapping("modify/{idx}")
+    public String modify(@PathVariable("idx") Long idx,UserDTO userDTO,MultipartFile[] files,HttpServletRequest req)throws IOException{
         if(userService.modify(userDTO)){
-            String name = (String) req.getSession().getAttribute("loginUser");
-            if(userService.updateFile(files,name)){
-                System.out.println("update성공");
+            if(userService.updateFile(files,idx)){
+                System.out.println("프로필사진 update 성공");
                 return "redirect:/user/mypage";
             }
-            System.out.println("here");
-            return "redirect:/user/mypage";
         }
         return "redirect:/user/mypage";
     }

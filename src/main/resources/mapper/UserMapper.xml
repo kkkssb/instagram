@@ -8,7 +8,7 @@
         select * from user where phoneNumber=#{phoneNumber} and password=#{password}
     </select>
     <select id="findById">
-        select * from user where name=#{name}
+        select * from user where nickName=#{nickName}
     </select>
     <update id="modify">
         update user set phoneNumber=#{phoneNumber}, nickName=#{nickName} where idx=#{idx};

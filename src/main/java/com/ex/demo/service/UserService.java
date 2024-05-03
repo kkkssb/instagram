@@ -11,9 +11,10 @@ import java.io.IOException;
 public interface UserService {
     boolean join(UserDTO userDTO);
     UserDTO login(int phoneNumber, String password);
-    boolean insertFile(MultipartFile[] files,String name) throws IOException;
-    public ResponseEntity<Resource> forProfile(String name) throws IOException;
-    UserDTO userInfo(String name);
+    boolean insertFile(Long idx) throws IOException;
+    public ResponseEntity<Resource> forProfile(String nickName) throws IOException;
+    UserDTO userInfo(String nickName);
     boolean modify(UserDTO userDTO);
-    boolean updateFile(MultipartFile[] files,String name)throws IOException;
+    boolean updateFile(MultipartFile[] files,Long idx)throws IOException;
+    UserFileDTO userfileInfo(Long idx);
 }

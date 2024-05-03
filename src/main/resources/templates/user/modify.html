@@ -2,40 +2,133 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>modify</title>
+    <title>Title</title>
 </head>
+<link rel="stylesheet" href="/css/sideheader.css">
 <style>
+    .top1 {
+          margin: auto;
+          border: 1px solid #ced4da;
+          width: 350px;
+    }
+
+    .box {
+          margin: 10px;
+          /* padding: 10px; */
+          text-align: center;
+          /* border: 1px solid black; */
+    }
+
+    .box>img {
+          width: 100px;
+          height: 100px;
+          border: 1px solid #ced4da;
+          border-radius: 50%;
+    }
+
+    .box input {
+          padding: 15px;
+          width: 250px;
+          border: none;
+          border-radius: 15px;
+          background-color: #e9ecef;
+          font-size: 20px;
+          color: gray;
+    }
+
+    input:focus {
+          outline: 0.1px solid #adb5bd;
+    }
+
+    p {
+          padding-left: 50px;
+          font-size: 17px;
+          font-weight: bold;
+    }
+    .btn{
+          margin: 20px;
+          text-align: right;
+    }
+    .btn input{
+          width: 100px;
+          height: 35px;
+          padding: 5px;
+          font-size: 15px;
+          background-color: #e9ecef;
+          border: 1px solid gray;
+          border-radius: 10px;
+          cursor: pointer;
+    }
     .thumbnail{
     width:100px;
     height:100px;
     }
+    .ftag{
+            text-decoration: none;
+            color: #5498d0;
+            font-weight: bold;
+      }
 </style>
+
 <body>
-<h2>안녕하세요<span th:text="${nickName}"></span>님!</h2>
-<form id="boardForm" method="post" name="boardForm" th:action="@{/user/profile}"
-      enctype="multipart/form-data">
-    <table class="info_txt1">
-        <tr>
-            <th>작성자</th>
-            <td colspan="2">
-                <input type="text" name="userid" th:value="${session.loginUser}" readonly>
-            </td>
-        </tr>
-        <tr class="r0 at">
-            <th>파일 첨부1</th>
-            <td class="file0_cont" colspan="3">
-                <div class="m_file">
-                    <input type="file" name="files" id="file0" style="display:none">
-                    <span id="file0name">선택된 파일 없음</span>
-                    <a href="javascript:upload('file0')">파일 선택</a>
-                </div>
-            </td>
-        </tr>
-    </table>
-    <div class="info1">
-        <input type="submit" value="등록하기">
+<div id="wrap">
+    <script th:inline="javascript">
+        let login = /*[[${session.loginUser}]]*/'';
+        if(login === '' || login == null){
+            alert("로그인 후 이용해주세요.");
+            location.href = "/user/login";
+        }
+    </script>
+    <div class="header">
+        <div class="home">
+            <a href="#">
+                <img src="/images/home.png">
+                <span class="txt">홈</span>
+            </a>
+        </div>
+        <div class="home">
+            <a href="#">
+                <img src="/images/home.png">
+                <span class="txt">만들기</span>
+            </a>
+        </div>
+        <div class="home">
+            <a th:href="@{/user/mypage}">
+                <img class="myimg" th:src="@{/user/getImg (loginUser=${session.loginUser})}">
+                <span class="txt">프로필</span>
+            </a>
+        </div>
     </div>
-</form>
+    <section>
+        <div class="top1">
+            <form id="boardForm" method="post" name="boardForm" th:action="@{/user/modify/{idx}(idx=${user.idx})}"
+                  enctype="multipart/form-data">
+                <p>프로필 수정</p>
+                <div class="box">
+                    <img id="imgg" th:src="@{/user/getImg (loginUser=${session.loginUser})}">
+
+                        <div class="file0_cont" colspan="3">
+                                <input type="file" name="files" id="file0" style="display:none">
+                                <a class="ftag" href="javascript:upload('file0')">파일 선택</a>
+                        </div>
+
+                </div>
+                <p>닉네임 수정</p>
+                <div class="box">
+                    <input type="text" name="nickName" th:value="${user.getNickName()}">
+                </div>
+                <p>핸드폰 번호</p>
+                <div class="box">
+                    <input type="text" name="phoneNumber" th:value="${user.getPhoneNumber()}">
+                </div>
+                <div class="btn">
+                    <input type="hidden" th:value="${user.getIdx()}">
+                    <input type="submit" value="등록하기">
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
 </body>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
@@ -58,7 +151,7 @@
          else {
              //파일이 없었다가 업로드 한 경우
              //#file0name
-             $("#" + fileTag.id + "name").text(file.name);
+             //$("#" + fileTag.id + "name").text(file.name);
              //업로드 된 파일의 확장자명
              let ext = file.name.split(".").pop();
              if (ext == 'jpeg' || ext == 'jpg' || ext == 'png' || ext == 'gif' || ext == 'webp') {
@@ -66,10 +159,8 @@
                  const reader = new FileReader();
 
                  reader.onload = function (ie) {
-                     const img = document.createElement("img");
+                     const img = document.getElementById("imgg");
                      img.setAttribute("src", ie.target.result)
-                     img.setAttribute("class", "thumbnail");
-                     document.querySelector("." + fileTag.id + "_cont").appendChild(img);
                  }
                  reader.readAsDataURL(file);
              }

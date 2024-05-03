@@ -5,21 +5,51 @@
     <title>mypage</title>
 </head>
 <link rel="stylesheet" href="/css/mystory.css">
-
+<link rel="stylesheet" href="/css/sideheader.css">
 <style>
 
 </style>
 <body>
 <div id="wrap">
+    <div class="header">
+        <div class="home">
+            <a href="#">
+                <img src="/images/home.png">
+                <span class="txt">홈</span>
+            </a>
+        </div>
+        <div class="home">
+            <a href="#">
+                <img src="/images/write.png">
+                <span class="txt">만들기</span>
+            </a>
+        </div>
+        <div class="home">
+            <a th:href="@{/user/mypage}">
+                <th:block th:if="${userfile.orgname eq 'orgname'}">
+                    <img class="myimg" src="/images/profile.png">
+                </th:block>
+                <th:block th:if="${userfile.orgname ne 'orgname'}">
+                    <img class="myimg" th:src="@{/user/getImg (loginUser=${session.loginUser})}">
+                </th:block>
+                <span class="txt">프로필</span>
+            </a>
+        </div>
+    </div>
     <section>
         <div class="s_profil">
             <div class="profil_img">
-                <img class="th" th:src="@{/user/getImg (loginUser=${session.loginUser})}" alt="">
+                <th:block th:if="${userfile.orgname eq 'orgname'}">
+                    <img class="th" src="/images/profile.png">
+                </th:block>
+                <th:block th:if="${userfile.orgname ne 'orgname'}">
+                    <img class="th" th:src="@{/user/getImg (loginUser=${session.loginUser})}">
+                </th:block>
             </div>
             <div class="s_info">
                 <div class="info_id">
                     <span th:text="${user.getNickName()}"></span>
-                    <a th:href="@{/user/modify2}">프로필 수정</a>
+                    <a th:href="@{/user/modify}">프로필 수정</a>
                 </div>
                 <div>
                     <span>게시물 0</span>

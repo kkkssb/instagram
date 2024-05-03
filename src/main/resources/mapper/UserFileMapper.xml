@@ -2,12 +2,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ex.demo.mapper.UserFileMapper">
     <insert id="insertFile">
-        insert into userfile (systemname,orgname,name) values (#{systemname},#{orgname},#{name})
+        insert into userfile (systemname,orgname,idx) values (#{systemname},#{orgname},#{idx})
     </insert>
     <select id="getFiles">
-        select * from userfile where name=#{name}
+        select * from userfile where idx=#{idx}
     </select>
     <update id="updateFile">
-        update userfile set systemname=#{systemname}, orgname=#{orgname} where name=#{name}
+        update userfile set systemname=#{systemname}, orgname=#{orgname} where idx=#{idx}
     </update>
+    <select id="fileInfo">
+        select * from userfile where idx=#{idx}
+    </select>
 </mapper>

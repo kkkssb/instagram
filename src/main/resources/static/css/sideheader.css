@@ -1,0 +1,36 @@
+.header {
+            border-right: 1px solid #ced4da;
+            width: 250px;
+            height: 100%;
+            position: fixed;
+            margin-top: -20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            text-align: center;
+            background-color:white;
+      }
+
+      .header img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+      }
+      .myimg{
+      border-radius:50%;
+      }
+      .home{
+      height: 30px;
+      padding: 60px 30px 0px 30px;
+      }
+      .home >a{
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+      }
+      .txt{
+            padding-top: 5px;
+            font-size: 15px;
+            color:black;
+            font-weight:bold;
+      }
