@@ -1,5 +1,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ex.demo.mapper.BoardMapper">
-
+    <insert id="regist">
+        insert into board (boardnum,contents,nickName) values(#{boardnum},#{contents},#{nickName})
+    </insert>
+    <select id="lastBoardnum">
+        select max(boardnum) from board where nickName=#{nickName}
+    </select>
 </mapper>

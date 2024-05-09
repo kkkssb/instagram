@@ -1,4 +1,85 @@
 package com.ex.demo.service;
 
-public class BoardServiceImpl {
+import com.ex.demo.domain.dto.BoardDTO;
+import com.ex.demo.domain.dto.BoardFileDTO;
+import com.ex.demo.mapper.BoardFileMapper;
+import com.ex.demo.mapper.BoardMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+@Service
+public class BoardServiceImpl implements BoardService{
+    @Autowired
+    private BoardMapper boardMapper;
+    @Autowired
+    private BoardFileMapper boardFileMapper;
+    @Value("${file.dir}")
+    private String saveFolder;
+
+    @Override
+    public boolean regist(BoardDTO boardDTO) {
+        return boardMapper.regist(boardDTO)==1;
+    }
+
+    @Override
+    public boolean saveFile(BoardDTO boardDTO, MultipartFile[] files) throws IOException {
+        int row = boardMapper.regist(boardDTO);
+        if(row != 1) {
+            return false;
+        }
+        if(files == null || files.length == 0) {
+            return true;
+        }
+        else {
+            Long boardnum=boardMapper.lastBoardnum(boardDTO.getNickName());
+            //방금 등록한 게시글 번호
+            boolean flag = false;
+            for(int i=0;i<files.length-1;i++) {
+                MultipartFile file = files[i];
+                //apple.png
+                String orgname = file.getOriginalFilename();
+                System.out.println(orgname);
+                //5
+                int lastIdx = orgname.lastIndexOf(".");
+                System.out.println(lastIdx);
+                //.png
+                String extension = orgname.substring(lastIdx);
+
+                LocalDateTime now = LocalDateTime.now();
+                String time = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+
+                //20231005103911237랜덤문자열.png
+                String systemname = time+ UUID.randomUUID().toString()+extension;
+                System.out.println(systemname);
+
+                //실제 저장될 파일의 경로
+                String path = saveFolder +systemname;
+
+                BoardFileDTO fdto = new BoardFileDTO();
+                fdto.setBoardnum(boardnum);
+                fdto.setSystemname(systemname);
+                fdto.setOrgname(orgname);
+
+                //실제 파일 업로드
+                file.transferTo(new File(path));
+
+                flag = boardFileMapper.saveFile(fdto) == 1;
+
+                if(!flag) {
+                    //업로드 했던 파일 삭제, 게시글 데이터 삭제
+                    return flag;
+                }
+            }
+        }
+        return true;
+    }
 }
