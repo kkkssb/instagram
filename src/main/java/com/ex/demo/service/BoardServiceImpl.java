@@ -6,14 +6,22 @@ import com.ex.demo.mapper.BoardFileMapper;
 import com.ex.demo.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -81,5 +89,32 @@ public class BoardServiceImpl implements BoardService{
             }
         }
         return true;
+    }
+
+    @Override
+    public List<BoardDTO> getboard() {
+        return boardMapper.getBoard();
+    }
+
+    @Override
+    public List<BoardFileDTO> getBoardImg() {
+        return boardFileMapper.findByBoardnum();
+    }
+
+    @Override
+    public ResponseEntity<Resource> getBordImgs(String systemname) throws Exception {
+        //경로에 관련된 객체(자원으로 가지고 와야 하는 파일에 대한 경로)
+        Path path = Paths.get(saveFolder+systemname);
+        //경로에 있는 파일의 MIME타입을 조사해서 그대로 담기
+        String contentType = Files.probeContentType(path);
+        //응답 헤더 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+
+        //해당 경로(path)에 있는 파일에서부터 뻗어나오는 InputStream(Files.newInputStream)을 통해 자원화(InputStreamResource)
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
+        System.out.println(resource);
+
+        return new ResponseEntity<>(resource,headers,HttpStatus.OK);
     }
 }

@@ -67,6 +67,10 @@ public class UserController {
         String nickName = (String) req.getSession().getAttribute("loginUser");
         return userService.forProfile(nickName);
     }
+    @GetMapping("/getproImg")
+    public ResponseEntity<Resource> getProfileImage2(String user) throws IOException {
+        return userService.forProfile(user);
+    }
     @GetMapping("mypage")
     public String mypage(HttpServletRequest req,Model model){
         String nickName = (String) req.getSession().getAttribute("loginUser");

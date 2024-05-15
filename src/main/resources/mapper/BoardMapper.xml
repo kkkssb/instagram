@@ -7,4 +7,7 @@
     <select id="lastBoardnum">
         select max(boardnum) from board where nickName=#{nickName}
     </select>
+    <select id="getBoard">
+        SELECT * FROM board ORDER BY boardnum DESC;
+    </select>
 </mapper>

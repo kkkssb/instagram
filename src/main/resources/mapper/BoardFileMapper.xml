@@ -4,4 +4,7 @@
     <insert id="saveFile">
         insert into boardfile (systemname,orgname,boardnum) values (#{systemname},#{orgname},#{boardnum})
     </insert>
+    <select id="findByBoardnum">
+        select * from boardfile ORDER BY boardnum DESC;
+    </select>
 </mapper>
