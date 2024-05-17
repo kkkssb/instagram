@@ -45,6 +45,18 @@ public class BoardController {
         return "redirect:/user/mypage";
     }
 
+    @GetMapping("getBoards")
+    public ResponseEntity<List<BoardDTO>> getBoardsByAjax(){
+        List<BoardDTO> board=boardService.getboard();
+        System.out.println("abc"+board);
+        return ResponseEntity.ok(board);
+    }
+    @GetMapping("getBoardImgs")
+    public ResponseEntity<List<BoardFileDTO>> getBoardImgsByAjax(){
+        List<BoardFileDTO> boardFile=boardService.getBoardImg();
+        return ResponseEntity.ok(boardFile);
+    }
+
     @GetMapping("home")
     public String home(HttpServletRequest req, Model model){
         String nickName = (String) req.getSession().getAttribute("loginUser");
@@ -58,9 +70,8 @@ public class BoardController {
         System.out.println(boardService.getBoardImg());
         return "/board/home";
     }
-    @GetMapping("getBoardImgs")
+    @GetMapping("getBImgs")
     public ResponseEntity<Resource> getBoardImgs(String systemname) throws Exception {
-        System.out.println("MBoard controller - thumbnail");
         return boardService.getBordImgs(systemname);
     }
 

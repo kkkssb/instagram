@@ -8,9 +8,8 @@
 <link rel="stylesheet" href="/css/home.css">
 <style>
     .slider__wrap {
-       border: 1px solid black;
        width: 500px;
-       height: 530px;
+       height: 500px;
        display: flex;
        align-items: center;
        justify-content: center;
@@ -37,7 +36,7 @@
        height: 500px;
        object-fit: cover;
    }
-   .slider img{
+   .slider_img{
        width: 100%;
    }
    .slider::before {
@@ -48,12 +47,6 @@
        color: #fff;
        padding: 5px 10px;
    }
-   .slider:nth-child(1)::before {content: '이미지1';}
-   .slider:nth-child(2)::before {content: '이미지2';}
-   .slider:nth-child(3)::before {content: '이미지3';}
-   .slider:nth-child(4)::before {content: '이미지4';}
-   .slider:nth-child(5)::before {content: '이미지5';}
-   .slider:nth-child(6)::before {content: '이미지1';}
 
    @media (max-width: 800px) {
        .slider__img {
@@ -91,33 +84,13 @@
        background: rgba(255,255,255,0.4);
        color:#000;
    } */
-   .slider__btn a.prev {
+   .slider__btn a#prev {
        left: 0;
    }
-   .slider__btn a.next {
+   .slider__btn a#next {
        right: 0;
    }
 
-   .slider__dot {
-       position: absolute;
-       left: 50%;
-       transform: translateX(-50%);
-       bottom: 10px;
-       display: none;
-   }
-   .slider__dot .dot {
-       width: 10px;
-       height: 5px;
-       background: rgba(0,0,0,0.4);
-       display: inline-block;
-       border-radius: 50%;
-       text-indent: -9999px;
-       transition: all 0.3s;
-       margin: 2px;
-   }
-   .slider__dot .dot.active {
-       background: rgba(255,255,255,0.9);
-   }
 </style>
 <body>
 <div id="wrap">
@@ -148,12 +121,11 @@
     </div>
     <section>
         <div class="s_title">
-            <th:block th:if="${list != null and list.size()>0}" th:each="board : ${list}">
-            <div class="s_container">
+            <div id="boardForm" class="s_container" style="display:none;">
                 <div class="profil">
                     <div class="top">
-                        <img th:src="@{/user/getproImg (user=${board.nickName})}" alt="">
-                        <a href="#">[[${board.nickName}]]</a>
+                        <img class="top_img" src="" alt="">
+                        <a class="top_a" href="#"></a>
                         <h4>22시간전</h4>
                     </div>
                     <div class="dot">
@@ -168,28 +140,15 @@
                     <div class="slider__wrap">
                         <div class="slider__img">
                             <div class="slider__inner">
-                                <th:block th:if="${files != null and files.size() > 0}" th:each="file : ${files}">
-                                    <th:block th:if="${file.boardnum eq board.boardnum}">
-                                        <div class="slider" role="group">
-                                            <img  th:src="@{/board/getBoardImgs (systemname=${file.systemname})}" alt="">
-                                        </div>
-                                    </th:block>
-                                </th:block>
+
                             </div>
                             <div class="slider__btn">
-                                <a href="#" class="prev" role="button" aria-label="왼쪽 이미지">
+                                <a href="#" onclick="return false;" id="prev" role="button" aria-label="왼쪽 이미지">
                                     <img src="/images/page1.png">
                                 </a>
-                                <a href="#" class="next" role="button" aria-label="오른쪽 이미지">
+                                <a href="#" onclick="return false;" id="next" role="button" aria-label="오른쪽 이미지">
                                     <img src="/images/page.png"></a>
                             </div>
-                        </div>
-                        <div class="slider__dot">
-                            <a href="#" class="dot active">이미지1</a>
-                            <a href="#" class="dot">이미지2</a>
-                            <a href="#" class="dot">이미지3</a>
-                            <a href="#" class="dot">이미지4</a>
-                            <a href="#" class="dot">이미지5</a>
                         </div>
                     </div>
                 </div>
@@ -210,13 +169,12 @@
                 </div>
                 <div class="bottom">
                     <div class="likecnt">
-                        <p>좋아요 [[${board.likes}]]개</p>
+                        <p>좋아요 개</p>
                     </div>
                     <div class="uid">
-                        <p>[[${board.nickName}]]</p>
+                        <p class="uids"></p>
                         <div class="scontents">
                             <p class="scontents1" style="overflow: hidden;">
-                                [[${board.contents}]]
                             </p>
                             <p class="modify">(수정됨)</p>
                             <p class="less">간략히</p>
@@ -267,6 +225,7 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="/js/home.js"></script>
+<script src="/js/list.js"></script>
 <script>
     const sliderWrap = document.querySelector(".slider__wrap");
     const sliderImg = document.querySelector(".slider__img");       // 보여지는 영역
@@ -279,19 +238,6 @@
     let currentIndex = 0;                       // 현재 이미지
     let sliderCount = slider.length;            // 이미지 갯수
     let sliderWidth = sliderImg.offsetWidth;    // 이미지 가로값
-    let dotIndex = "";
-
-    // 초기값 설정 함수 init()
-    function init(){
-        // <a href="#" class="dot active">이미지1</a>
-
-        slider.forEach(() => {dotIndex += "<a href='#' class='dot'>이미지1</a>";});
-        sliderDot.innerHTML = dotIndex;
-
-        // 첫 번째 닷 버튼에 활성화 표시(active)
-        sliderDot.firstChild.classList.add("active");
-    }
-    init();
 
     // 이미지 이동
     function gotoSlider(num){
@@ -299,16 +245,12 @@
         sliderInner.style.transform = "translateX("+ -sliderWidth * num +"px)";
         currentIndex = num;
 
-        // 두번째 이미지 == 두번째 닷에 클래스 추가
-        // 닷 메뉴 클래스 모두 삭제 -> 해당 이미지의 닷 메뉴에 클래스 추가
-        let dotActive = document.querySelectorAll(".slider__dot .dot");
-        dotActive.forEach(el => el.classList.remove("active"));
-        dotActive[num].classList.add("active");
     }
 
     // 버튼 클릭했을 때
     document.querySelectorAll(".slider__btn a").forEach((btn, index) => {
         btn.addEventListener("click", () => {
+        console.log("11")
             let prevIndex = (currentIndex + (sliderCount -1)) % sliderCount;
             let nextIndex = (currentIndex + 1) % sliderCount;
 
@@ -320,11 +262,5 @@
         });
     })
 
-    // 닷 버튼을 클릭했을 때 해당 이미지로 이동
-    document.querySelectorAll(".slider__dot .dot").forEach((dot, index) => {
-        dot.addEventListener("click", () => {
-            gotoSlider(index);
-        });
-    })
 </script>
 </html>

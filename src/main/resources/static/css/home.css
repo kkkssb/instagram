@@ -30,7 +30,7 @@
     display: flex;
     justify-content: space-between;
 }
-.top a{
+.top_a{
     /* border:  1px solid black; */
     font-size: 17px;
     font-weight: bold;
@@ -46,7 +46,8 @@
     margin-top: 12px;
     /* padding: 10px; */
 }
-.top img{
+.top_img{
+    object-fit:cover;
     width: 35px;
     height: 35px;
     border-radius: 50%;
@@ -111,6 +112,9 @@
 }
 .likecnt,.uid,.scontents{
     /* margin-top: 5px; */
+}
+.likecnt{
+margin:5px;
 }
 .likecnt > p{
     /* border:  1px solid black;   */

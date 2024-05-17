@@ -18,6 +18,7 @@
       }
       .myimg{
       border-radius:50%;
+      object-fit:cover;
       }
       .home{
       height: 30px;
