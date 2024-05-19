@@ -2,7 +2,11 @@ package com.ex.demo.service;
 
 import com.ex.demo.domain.dto.BoardDTO;
 import com.ex.demo.domain.dto.BoardFileDTO;
+import com.ex.demo.domain.dto.FollowDTO;
+import com.ex.demo.domain.dto.LikeDTO;
 import com.ex.demo.mapper.BoardFileMapper;
+import com.ex.demo.mapper.BoardFollowMapper;
+import com.ex.demo.mapper.BoardLikeMapper;
 import com.ex.demo.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +34,10 @@ public class BoardServiceImpl implements BoardService{
     private BoardMapper boardMapper;
     @Autowired
     private BoardFileMapper boardFileMapper;
+    @Autowired
+    private BoardLikeMapper boardLikeMapper;
+    @Autowired
+    private BoardFollowMapper boardFollowMapper;
     @Value("${file.dir}")
     private String saveFolder;
 
@@ -116,5 +124,39 @@ public class BoardServiceImpl implements BoardService{
         System.out.println(resource);
 
         return new ResponseEntity<>(resource,headers,HttpStatus.OK);
+    }
+
+    @Override
+    public boolean clickLike(String nickName, Long boardnum) {
+        boolean click=boardLikeMapper.clicklike(nickName,boardnum)==1;
+        boolean likeCntUP=boardMapper.likeCntUp(boardnum)==1;
+        return click&&likeCntUP;
+    }
+
+    @Override
+    public boolean cancelLike(String nickName, Long boardnum) {
+        boolean cancelLike=boardLikeMapper.cancelLike(nickName,boardnum)==1;
+        boolean likeCntDown=boardMapper.likeCntDown(boardnum)==1;
+        return cancelLike&&likeCntDown;
+    }
+
+    @Override
+    public boolean follow(String user, String writer) {
+        return boardFollowMapper.follow(user, writer)==1;
+    }
+
+    @Override
+    public boolean cancelFollow(String user, String writer) {
+        return boardFollowMapper.cancelFollow(user, writer)==1;
+    }
+
+    @Override
+    public List<LikeDTO> getLikeList() {
+        return boardLikeMapper.likeList();
+    }
+
+    @Override
+    public List<FollowDTO> getFollowlist(String user) {
+        return boardFollowMapper.followList(user);
     }
 }

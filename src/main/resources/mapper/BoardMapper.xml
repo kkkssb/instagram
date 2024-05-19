@@ -10,4 +10,10 @@
     <select id="getBoard">
         SELECT * FROM board ORDER BY boardnum DESC;
     </select>
+    <update id="likeCntUp">
+        update board set likes=likes+1 where boardnum=#{boardnum}
+    </update>
+    <update id="likeCntDown">
+        update board set likes=likes-1 where boardnum=#{boardnum}
+    </update>
 </mapper>

@@ -126,14 +126,18 @@
                     <div class="top">
                         <img class="top_img" src="" alt="">
                         <a class="top_a" href="#"></a>
-                        <h4>22시간전</h4>
+                        <h4></h4>
                     </div>
-                    <div class="dot">
-                        <span>. . .</span>
-                    </div>
-                    <div class="dot_sub">
-                        <a href="javascript:;">수정</a>
-                        <a href="javascript:;">삭제</a>
+                    <div class="top2">
+                        <div class="follow">팔로우</div>
+                        <div class="follow1">팔로잉</div>
+                        <div class="dot">
+                            <span>. . .</span>
+                        </div>
+                        <div class="dot_sub">
+                            <a href="#">수정</a>
+                            <a href="#">삭제</a>
+                        </div>
                     </div>
                 </div>
                 <div class="pic">
@@ -219,6 +223,8 @@
                 </div>
             </div>
             </th:block>
+            <a id="writeBtn" th:href="${'/story/swrite'}"
+               th:data-hidden-value="${session.loginUser}" style="display:none;"></a>
         </div>
     </section>
 </div>

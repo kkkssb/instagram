@@ -2,7 +2,7 @@
     display: none;
 }
 .seeAll,.dot,.less,.like1,.msg,
-.less1,.like,.dot_sub,.uid3{
+.less1,.like,.dot_sub,.uid3,.follow,.follow1{
     cursor: pointer;
 }
 .s_title{
@@ -51,7 +51,36 @@
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    border:  1px solid black;
+    border:  1px solid #ced4da;
+}
+.top2{
+	display: flex;
+}
+.follow{
+    width: 60px;
+    height: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #7C9FCD;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    padding: 4px;
+    margin: 5px 25px 0px 0px;
+}
+.follow1{
+    width: 60px;
+    height: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: white;
+    border-radius: 5px;
+    border: 2px solid #7C9FCD;
+    color: #7C9FCD;
+    text-align: center;
+    padding: 2px;
+    margin: 5px 25px 0px 0px;
+    display: none;
 }
 .dot{
    font-weight: 900;

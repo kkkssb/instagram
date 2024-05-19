@@ -11,4 +11,7 @@ public interface BoardMapper {
     int regist(BoardDTO boardDTO);
     Long lastBoardnum(String nickName);
     List<BoardDTO> getBoard();
+    int likeCntUp(Long boardnum);
+    int likeCntDown(Long boardnum);
+
 }

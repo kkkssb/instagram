@@ -1,0 +1,13 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ex.demo.mapper.BoardLikeMapper">
+    <insert id="clicklike">
+        insert into likes c
+    </insert>
+    <select id="likeList">
+        SELECT * FROM likes
+    </select>
+    <delete id="cancelLike">
+        delete from likes where boardnum=#{boardnum} and nickName=#{nickName}
+    </delete>
+</mapper>
