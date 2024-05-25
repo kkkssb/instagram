@@ -1,13 +1,7 @@
 package com.ex.demo.service;
 
-import com.ex.demo.domain.dto.BoardDTO;
-import com.ex.demo.domain.dto.BoardFileDTO;
-import com.ex.demo.domain.dto.FollowDTO;
-import com.ex.demo.domain.dto.LikeDTO;
-import com.ex.demo.mapper.BoardFileMapper;
-import com.ex.demo.mapper.BoardFollowMapper;
-import com.ex.demo.mapper.BoardLikeMapper;
-import com.ex.demo.mapper.BoardMapper;
+import com.ex.demo.domain.dto.*;
+import com.ex.demo.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -34,6 +28,8 @@ public class BoardServiceImpl implements BoardService{
     private BoardMapper boardMapper;
     @Autowired
     private BoardFileMapper boardFileMapper;
+    @Autowired
+    private BoardReplyMapper boardReplyMapper;
     @Autowired
     private BoardLikeMapper boardLikeMapper;
     @Autowired
@@ -148,6 +144,26 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public boolean cancelFollow(String user, String writer) {
         return boardFollowMapper.cancelFollow(user, writer)==1;
+    }
+
+    @Override
+    public boolean registRelpy(ReplyDTO replyDTO) {
+        return boardReplyMapper.registReply(replyDTO)==1;
+    }
+
+    @Override
+    public List<ReplyDTO> getReplyList(Long boardnum) {
+        return boardReplyMapper.getReplyList(boardnum);
+    }
+
+    @Override
+    public boolean removeBoard(String nickName, Long boardnum) {
+        return boardMapper.removeBoard(nickName,boardnum);
+    }
+
+    @Override
+    public boolean removeReply(String nickName, int replynum) {
+        return boardReplyMapper.removeReply(nickName,replynum);
     }
 
     @Override

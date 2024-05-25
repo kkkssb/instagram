@@ -13,5 +13,6 @@ public interface BoardMapper {
     List<BoardDTO> getBoard();
     int likeCntUp(Long boardnum);
     int likeCntDown(Long boardnum);
+    boolean removeBoard(String nickName,Long boardnum);
 
 }

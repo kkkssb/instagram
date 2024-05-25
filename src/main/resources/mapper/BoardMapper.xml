@@ -16,4 +16,7 @@
     <update id="likeCntDown">
         update board set likes=likes-1 where boardnum=#{boardnum}
     </update>
+    <delete id="removeBoard">
+        delete from board where nickName=#{nickName} and boardnum=#{boardnum}
+    </delete>
 </mapper>

@@ -8,9 +8,19 @@ const getBoards = (callback) => {
 		}
 	)
 };
+//게시글 지우기
+const removeBoard = (loginUser,boardnum, callback) => {
+               	$.ajax({
+               		type:"POST",
+               		url:"/board/removeBoard/"+loginUser+"/"+boardnum,
+               		success:function(result){
+               			callback(result);
+               		}
+               	});
+               };
 //모든 게시글 이미지 result에 담기
 const getBoardImgs = (callback) => {
-console.log("img");
+//console.log("img");
 	$.getJSON(
 		"/board/getBoardImgs",
 		function(result){
@@ -18,9 +28,18 @@ console.log("img");
 		}
 	)
 };
+//해당 게시글 댓글 불러오기
+const getReply = (boardnum, callback) => {
+console.log("getReply")
+	$.getJSON(
+		"/board/getReply/"+boardnum,
+		function(data){
+			callback(data);
+		}
+	)
+};
 //모든 likelist data에 담기
 const getLikeList = (callback) => {
-console.log("getLikelist")
 	$.getJSON(
 		"/board/likeList",
 		function(data){
@@ -30,7 +49,6 @@ console.log("getLikelist")
 };
 //유저 팔로워 담기
 const getFollowlist = (user, callback) => {
-console.log("getFollowlist")
 	$.getJSON(
 		"/board/followList/"+user,
 		function(data){
@@ -38,6 +56,29 @@ console.log("getFollowlist")
 		}
 	)
 };
+//댓글 등록하기
+const registReply = (loginUser,boardnum,text, callback) => {
+               	$.ajax({
+               		type:"POST",
+               		url:"/board/registReply/"+loginUser+"/"+boardnum,
+               		contentType: "application/json",
+                    data: JSON.stringify({ text: text }),
+               		success:function(result){
+               			callback(result);
+               		}
+               	});
+               };
+//댓글 지우기
+const removeReply = (loginUser,replynum, callback) => {
+               	$.ajax({
+               		type:"POST",
+               		url:"/board/removeReply/"+loginUser+"/"+replynum,
+               		success:function(result){
+               			callback(result);
+               		}
+               	});
+               };
+//게시글 좋아요 누르기
 const clickLike = (loginUser,boardnum, callback) => {
                	$.ajax({
                		type:"POST",
@@ -47,7 +88,7 @@ const clickLike = (loginUser,boardnum, callback) => {
                		}
                	});
                };
-
+//게시글 좋아요 취소
 const cancelLike = (loginUser,boardnum, callback) => {
                	$.ajax({
                		type:"POST",
@@ -57,6 +98,7 @@ const cancelLike = (loginUser,boardnum, callback) => {
                		}
                	});
                };
+//게시글 쓴 유저 팔로우하기
 const Follow = (loginUser,writer, callback) => {
                	$.ajax({
                		type:"POST",
@@ -66,6 +108,7 @@ const Follow = (loginUser,writer, callback) => {
                		}
                	});
                };
+//팔로우 취소
 const cancelFollow = (loginUser,writer, callback) => {
                	$.ajax({
                		type:"POST",
@@ -75,6 +118,19 @@ const cancelFollow = (loginUser,writer, callback) => {
                		}
                	});
                };
+//댓글폼 복제하기
+const replyBox = (toCopy, num, appendTo) => {
+	let reply = toCopy.cloneNode(true);
+	let trTagClass = "reply_box"+num+" ";
+	reply.removeAttribute('id');
+	reply.className = trTagClass;
+
+	appendTo.appendChild(reply);
+    events();
+	return reply;
+};
+//새로고침 전 팔로우버튼 표시변경
+//[ex)어떤 유저 팔로우 클릭 시 해당 유저 게시글의 팔로우 버튼들 모두 팔로잉으로 변경]
 const followBtn = (writer, ifClick) => {
 	document.querySelectorAll(".follow." +writer)
 		.forEach(followTag => {
@@ -85,12 +141,16 @@ const followBtn = (writer, ifClick) => {
 			follow1Tag.style.display = ifClick?"block":"none";
 		});
 };
+
+
 //페이지 로드시 getBoards ajax실행
 window.onload = () => {
 	getBoards(data=>{
 	copyStoryForm(data);
 	});
 };
+
+
 //게시글스토리 작성
 const board = document.querySelector(".s_title");
 const loginUser = document.querySelector("#writeBtn").dataset.hiddenValue;
@@ -129,6 +189,16 @@ const copyStoryForm = boards => {
 		let fullhrt = document.querySelector(findTag+".like1");
 		let follow = document.querySelector(findTag+".follow");
 		let following = document.querySelector(findTag+".follow1");
+		let reply = document.querySelector(findTag+".reply");
+		let reply_box = document.querySelector(findTag+".reply_box");
+		let seeAll = document.querySelector(findTag+".seeAll");
+		let reply_uid = document.querySelector(findTag+".uid1");
+		let reply_txt = document.querySelector(findTag+".uid2");
+		let replycnt1 = document.querySelector(findTag+".replycnt1");
+		let dot_ = document.querySelector(findTag+".dot_");
+		let modifyB = document.querySelector(findTag+".modifyB");
+		let removeB = document.querySelector(findTag+".removeB");
+        let replyForm = document.querySelector("#replyForm");
 
 		//복제 폼 안에 데이터넣기
 		top_img.setAttribute("src", "/user/getproImg?user="+nickName); //프로필 사진
@@ -136,18 +206,80 @@ const copyStoryForm = boards => {
 		likecnt.innerHTML = "좋아요 " + likes + "개"; //게시글 좋아요 개수
 		uids.innerHTML = nickName;// 게시글 내용 왼쪽 닉네임
 		scontents1.innerHTML = contents; //게시글 내용
-		follow.classList.add(nickName);
+		seeAll.innerHTML="댓글 0개 모두보기";
+		follow.classList.add(nickName);//팔로우표시 div클래스에 닉네임추가
 		following.classList.add(nickName);
+
+        //닉네임과 로그인유저가 같을 시 팔로우 버튼 숨기기, 글 수정,삭제 버튼 보이기
+        if(nickName === loginUser){
+            follow.style.display = "none";
+            following.style.display = "none";
+            dot_.style.display = "block";
+        }
+
+        //게시글 지우기
+        removeB.addEventListener("click", () => {
+            removeBoard(loginUser,boardnum, result => {
+            let re = document.querySelector(findTag);
+            re.remove();
+            });
+        });
+
+
+        //댓글 불러오기
+        getReply(boardnum, data => {
+        	for(let i=0; i<data.length; i++){
+                let findTag1 = ".reply_box"+data[i].replynum+" ";
+        	    let copyReply = replyBox(replyForm, data[i].replynum, reply_box);//reply_box를 복제
+                let re = document.querySelector(findTag1);
+
+                copyReply.children[0].innerText = data[i].nickName;//복제폼에 데이터 넣기
+                copyReply.children[1].innerText = data[i].contents;
+                seeAll.innerHTML="댓글"+data.length+"개 모두보기";
+
+                let remove = document.querySelector(findTag1+".removeR");
+                let modify = document.querySelector(findTag1+".modifyR");
+
+                remove.addEventListener("click", () => {
+                //  e.preventDefault();
+                    //댓글 지우는 함수 호출
+                    removeReply(loginUser, data[i].replynum, result => {
+                        re.remove();
+                        data.length--
+                        seeAll.innerHTML="댓글"+data.length+"개 모두보기"; //게시글 좋아요 개수
+                    });
+                });
+        	}
+
+		    //댓글 달기
+		    reply.addEventListener("keydown", e => {
+                if(e.keyCode === 13){ //엔터 누를 시
+				    e.preventDefault();
+				    data.length++;//댓글 갯수 증가
+				    const text = reply.value;//댓글 내용
+				    //댓글 등록 함수
+				    registReply(loginUser, boardnum, text, result => {
+				        seeAll.innerHTML = "댓글" +data.length+ "개 모두보기";
+				        let copyReply = replyBox(replyForm, boardnum, reply_box);
+                        copyReply.children[0].innerText = loginUser;
+                        copyReply.children[1].innerText = text;
+                    });
+                    reply.value="";
+			    }
+		    });
+        });
+
+
+
 		//하트 표시
 		getLikeList(data => {
 		    for(let i=0; i<data.length; i++){
-		        if(boardnum==data[i].boardnum && loginUser===data[i].nickName){
+		        if(boardnum == data[i].boardnum && loginUser === data[i].nickName){
 		               mthrt.style.display = "none";
                        fullhrt.style.display = "block";
                 }
 		    }
 		});
-
 		//좋아요 누름 클릭이벤트
 		mthrt.addEventListener("click", () => {
 		    clickLike(loginUser, boardnum, result => {
@@ -163,29 +295,24 @@ const copyStoryForm = boards => {
         	});
         });
 
+
         //팔로우 표시
-        if(nickName===loginUser){
-        follow.style.display = "none";
-        following.style.display = "none";
-        }
         getFollowlist(loginUser, data => {
-        console.log("daf")
         	for(let i=0; i<data.length; i++){
-        		if(nickName==data[i].writer && loginUser===data[i].user){
+        		if(nickName == data[i].writer && loginUser === data[i].user){
         		    follow.style.display = "none";
                     following.style.display = "block";
                 }
         	}
         });
-
-        let writer=boards[i].nickName;
         //팔로우 클릭이벤트
+        let writer=boards[i].nickName;
         follow.addEventListener("click", () => {
             Follow(loginUser, writer, result => {
                let check = document.querySelectorAll("."+writer);
-               				if(check){
-               					followBtn((writer), true);
-               				}
+               if(check){
+               	    followBtn((writer), true);
+               }
 
             });
         });
@@ -193,13 +320,11 @@ const copyStoryForm = boards => {
         following.addEventListener("click", () => {
             cancelFollow(loginUser, writer, result => {
                  let check = document.querySelectorAll("."+writer);
-                       if(check){
-                           followBtn((writer), false);
-                       }
+                 if(check){
+                    followBtn((writer), false);
+                 }
             });
         });
-
-
 
 		let numOfPics = 0; //이미지 갯수 초기화
 		//이미지 불러오기
@@ -223,18 +348,17 @@ const copyStoryForm = boards => {
 		    if(numOfPics<2){ //이미지가 2개 이상일 때만 슬라이드 버튼 생성
 		        btn.style.display="none";
 		    }
-		//이미지 슬라이드 시 이벤트
-		const sliderWrap = document.querySelector(findTag+".slider__wrap");
-        const sliderImg = document.querySelector(findTag+".slider__img");
-		let currentIndex = 0;                       // 현재 이미지
-        let sliderCount = numOfPics;            // 이미지 갯수
-        let sliderWidth = 500;  // 이미지 가로값
+		    //이미지 슬라이드 시 이벤트
+		    const sliderWrap = document.querySelector(findTag+".slider__wrap");
+            const sliderImg = document.querySelector(findTag+".slider__img");
+		    let currentIndex = 0;                       // 현재 이미지
+            let sliderCount = numOfPics;            // 이미지 갯수
+            let sliderWidth = 500;  // 이미지 가로값
 
-		function gotoSlider(num){
+		    function gotoSlider(num){
                 slider__inner.style.transition = "all 400ms";
                 slider__inner.style.transform = "translateX("+ -sliderWidth * num +"px)";
                 currentIndex = num;
-
             }
 
             // 버튼 클릭했을 때
@@ -249,16 +373,14 @@ const copyStoryForm = boards => {
                         gotoSlider(nextIndex);
                     }
                 });
-            })
+            });
 		});
 
 
 		for(let i=0;i<boardForms.length;i++){
         		boardForms[i].style.display = "block";
-        	}
-        	events();
-
+        }
+        events();
 	}
-
 	return boardForms;
 };

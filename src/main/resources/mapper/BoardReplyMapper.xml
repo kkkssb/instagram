@@ -1,0 +1,13 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ex.demo.mapper.BoardReplyMapper">
+    <insert id="registReply">
+        insert into reply (boardnum, contents,nickName) values  (#{boardnum},#{contents},#{nickName})
+    </insert>
+    <select id="getReplyList">
+        select * from reply where boardnum=#{boardnum}
+    </select>
+    <delete id="removeReply">
+        delete from reply where nickName=#{nickName} and replynum=#{replynum}
+    </delete>
+</mapper>

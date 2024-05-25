@@ -2,7 +2,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ex.demo.mapper.BoardLikeMapper">
     <insert id="clicklike">
-        insert into likes c
+        insert into likes (nickName, boardnum) values  (#{nickName},#{boardnum})
     </insert>
     <select id="likeList">
         SELECT * FROM likes

@@ -131,12 +131,14 @@
                     <div class="top2">
                         <div class="follow">팔로우</div>
                         <div class="follow1">팔로잉</div>
-                        <div class="dot">
-                            <span>. . .</span>
-                        </div>
-                        <div class="dot_sub">
-                            <a href="#">수정</a>
-                            <a href="#">삭제</a>
+                        <div class="dot_">
+                            <div class="dot">
+                                <span>. . .</span>
+                            </div>
+                            <div class="dot_sub">
+                                <a class="modifyB" href="#">수정</a>
+                                <a class="removeB" href="#">삭제</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -186,39 +188,30 @@
                         </div>
                     </div>
                     <div class="replycnt">
-                        <table class="replycnt1">
-                            <tr>
-                                <td class="uid1">userid</td>
-                                <td class="uid2">dajlnvankdnk;vakdva</td>
-                                <td class="uid3">:</td>
-                                <td class="uid4">
-                                    <a href="javascript:;">수정</a>
-                                    <a href="javascript:;">삭제</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="uid1">useriddavfbaㅁㅎㅁㅇㅎㅁㅎㅁ</td>
-                                <td class="uid2">
-                                    dajlnvankdnk;vakdvaank;nbanakbanfkdajlnvankdnk;vakdvaank;nbanakbanfkdajlnvankdnk;vakdvaank;nbanakbanfk
-                                </td>
-                                <td class="uid3">:</td>
-                                <td class="uid4">
-                                    <a href="javascript:;">수정</a>
-                                    <a href="javascript:;">삭제</a>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="reply_box"></div>
                         <p class="less1">댓글 간략히</p>
-                        <p class="seeAll">댓글 3개 모두보기</p>
+                        <p class="seeAll">댓글 0개 모두보기</p>
                     </div>
                     <div class="rcontents">
                         <form>
                             <input type="hidden" name="" value="userid">
-                            <input type="text" name="" id="comment" placeholder="댓글 달기...">
+                            <input class="reply" type="text" name="" id="comment" placeholder="댓글 달기...">
                         </form>
                     </div>
                     <div class="line">
                         <hr>
+                    </div>
+                </div>
+            </div>
+            <!--댓글 html-->
+            <div style="display:none;">
+                <div class="reply_box" id="replyForm">
+                    <div class="uid1"></div>
+                    <div class="uid2"></div>
+                    <div class="uid3">:</div>
+                    <div class="uid4" style="display:none;">
+                        <span class="modifyR">수정</span>
+                        <span class="removeR">삭제</span>
                     </div>
                 </div>
             </div>
@@ -232,41 +225,4 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="/js/home.js"></script>
 <script src="/js/list.js"></script>
-<script>
-    const sliderWrap = document.querySelector(".slider__wrap");
-    const sliderImg = document.querySelector(".slider__img");       // 보여지는 영역
-    const sliderInner = document.querySelector(".slider__inner");   // 움직이는 영역
-    const slider = document.querySelectorAll(".slider");            // 이미지
-    const sliderDot = document.querySelector(".slider__dot");       //닷 메뉴
-
-    // 이미지 갯수에 따라 닷메뉴 생성되도록 만들어야함
-
-    let currentIndex = 0;                       // 현재 이미지
-    let sliderCount = slider.length;            // 이미지 갯수
-    let sliderWidth = sliderImg.offsetWidth;    // 이미지 가로값
-
-    // 이미지 이동
-    function gotoSlider(num){
-        sliderInner.style.transition = "all 400ms";
-        sliderInner.style.transform = "translateX("+ -sliderWidth * num +"px)";
-        currentIndex = num;
-
-    }
-
-    // 버튼 클릭했을 때
-    document.querySelectorAll(".slider__btn a").forEach((btn, index) => {
-        btn.addEventListener("click", () => {
-        console.log("11")
-            let prevIndex = (currentIndex + (sliderCount -1)) % sliderCount;
-            let nextIndex = (currentIndex + 1) % sliderCount;
-
-            if(btn.classList.contains("prev")){
-                gotoSlider(prevIndex);
-            } else {
-                gotoSlider(nextIndex);
-            }
-        });
-    })
-
-</script>
 </html>

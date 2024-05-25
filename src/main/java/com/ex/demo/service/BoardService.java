@@ -1,9 +1,6 @@
 package com.ex.demo.service;
 
-import com.ex.demo.domain.dto.BoardDTO;
-import com.ex.demo.domain.dto.BoardFileDTO;
-import com.ex.demo.domain.dto.FollowDTO;
-import com.ex.demo.domain.dto.LikeDTO;
+import com.ex.demo.domain.dto.*;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +18,10 @@ public interface BoardService {
     boolean cancelLike(String nickName,Long boardnum);
     boolean follow(String user,String writer);
     boolean cancelFollow(String user,String writer);
+    boolean registRelpy(ReplyDTO replyDTO);
+    List<ReplyDTO> getReplyList(Long boardnum);
+    boolean removeBoard(String user,Long boardnum);
+    boolean removeReply(String user,int replynum);
     List<LikeDTO> getLikeList();
     List<FollowDTO> getFollowlist(String user);
 

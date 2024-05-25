@@ -9,13 +9,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/board/*")
@@ -28,6 +26,9 @@ public class BoardController {
     public String write(HttpServletRequest req, Model model){
         String nickName = (String) req.getSession().getAttribute("loginUser");
         UserDTO user=userService.userInfo(nickName);
+        if (user == null) {
+            return "redirect:/user/login";
+        }
         UserFileDTO userfile = userService.userfileInfo(user.getIdx());
         model.addAttribute("user", user);
         model.addAttribute("userfile", userfile);
@@ -60,6 +61,9 @@ public class BoardController {
     public String home(HttpServletRequest req, Model model){
         String nickName1 = (String) req.getSession().getAttribute("loginUser");
         UserDTO user=userService.userInfo(nickName1);
+        if (user == null) {
+            return "redirect:/user/login";
+        }
         List<BoardDTO> list = boardService.getboard();
         UserFileDTO userfile = userService.userfileInfo(user.getIdx());
         model.addAttribute("list", list);
@@ -105,15 +109,61 @@ public class BoardController {
     @GetMapping("likeList")
     public ResponseEntity<List<LikeDTO>> getLikelist(){
         List<LikeDTO> list = boardService.getLikeList();
-//        System.out.println("list: "+list);
         return ResponseEntity.ok(list);
     }
     @GetMapping(value = "/followList/{user}")
     public ResponseEntity<List<FollowDTO>> getFollowlist(@PathVariable("user") String user){
         List<FollowDTO> list = boardService.getFollowlist(user);
-        System.out.println("list: "+list);
         return ResponseEntity.ok(list);
     }
+    @PostMapping(value = "/registReply/{loginUser}/{boardnum}")
+    public ResponseEntity<String> registReply(
+            @PathVariable("loginUser") String loginUser,
+            @PathVariable("boardnum") Long boardnum,
+            @RequestBody Map<String, String> requestBody
+    ) {
+        String text = requestBody.get("text");
+        ReplyDTO replyDTO = new ReplyDTO();
+        replyDTO.setNickName(loginUser);
+        replyDTO.setBoardnum(boardnum);
+        replyDTO.setContents(text);
+        if(boardService.registRelpy(replyDTO)){
+            System.out.println("댓글 등록 완료");
+        }
+        return ResponseEntity.ok("댓글이 성공적으로 등록되었습니다.");
+    }
+    @GetMapping(value = "/getReply/{boardnum}")
+    public ResponseEntity<List<ReplyDTO>> getReply(@PathVariable("boardnum") Long boardnum){
+        List<ReplyDTO> list = boardService.getReplyList(boardnum);
+        return ResponseEntity.ok(list);
+    }
+    @PostMapping(value = "/removeBoard/{user}/{boardnum}")
+    public ResponseEntity<String> removeBoard(
+            @PathVariable("user") String loginUser,
+            @PathVariable("boardnum") Long boardnum
+    ) {
+        if (boardService.removeBoard(loginUser,boardnum)) {
+            System.out.println("글 삭제 완료");
+            return ResponseEntity.ok("success");
+        } else {
+            System.out.println("글 삭제 실패");
+            return ResponseEntity.badRequest().body("fail");
+        }
+    }
+    @PostMapping(value = "/removeReply/{user}/{replynum}")
+    public ResponseEntity<String> removeReply(
+            @PathVariable("user") String loginUser,
+            @PathVariable("replynum") int replynum
+    ) {
+        if (boardService.removeReply(loginUser,replynum)) {
+            System.out.println("댓글 삭제 완료");
+            return ResponseEntity.ok("success");
+        } else {
+            System.out.println("댓글 삭제 실패");
+            return ResponseEntity.badRequest().body("fail");
+        }
+    }
+
     @PostMapping(value = "/follow/{user}/{writer}")
     public ResponseEntity<String> follow(
             @PathVariable("user") String loginUser,

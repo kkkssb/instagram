@@ -11,6 +11,13 @@
 </style>
 <body>
 <div id="wrap">
+    <script th:inline="javascript">
+        let login = /*[[${session.loginUser}]]*/'';
+        if(login === '' || login == null){
+            alert("로그인 후 이용해주세요.");
+            location.href = "/user/login";
+        }
+    </script>
     <div class="header">
         <div class="home">
             <a th:href="@{/board/home}">
