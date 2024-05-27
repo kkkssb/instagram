@@ -10,11 +10,20 @@
     <select id="getBoard">
         SELECT * FROM board ORDER BY boardnum DESC;
     </select>
+    <select id="getboardByName">
+        SELECT * FROM board where nickName=#{nickName} ORDER BY boardnum DESC;
+    </select>
     <update id="likeCntUp">
         update board set likes=likes+1 where boardnum=#{boardnum}
     </update>
     <update id="likeCntDown">
         update board set likes=likes-1 where boardnum=#{boardnum}
+    </update>
+    <update id="replyCntUp">
+        update board set reply=reply+1 where boardnum=#{boardnum}
+    </update>
+    <update id="replyCntDown">
+        update board set reply=reply-1 where boardnum=#{boardnum}
     </update>
     <delete id="removeBoard">
         delete from board where nickName=#{nickName} and boardnum=#{boardnum}

@@ -11,13 +11,6 @@
 </style>
 <body>
 <div id="wrap">
-    <script th:inline="javascript">
-        let login = /*[[${session.loginUser}]]*/'';
-        if(login === '' || login == null){
-            alert("로그인 후 이용해주세요.");
-            location.href = "/user/login";
-        }
-    </script>
     <div class="header">
         <div class="home">
             <a th:href="@{/board/home}">
@@ -59,9 +52,9 @@
                     <a th:href="@{/user/modify}">프로필 수정</a>
                 </div>
                 <div>
-                    <span>게시물 0</span>
-                    <span>팔로워 0</span>
-                    <span>팔로우 0</span>
+                    <span>게시물 [[${boardList.size}]]</span>
+                    <span>팔로워 [[${follower.size}]]</span>
+                    <span>팔로우 [[${following.size}]]</span>
                 </div>
             </div>
         </div>
@@ -70,19 +63,21 @@
         <hr style="width: 900px; margin: auto;">
         <div class="s_list">
             <div class="list_box">
-                <div class="slist_img">
-                    <img class="a" th:src="@{/board/images/section2.png}" alt="">
-                    <div class="link">
-                        <div class="b">
-                            <img th:src="@{/board/images/ssheart.png}" alt="">
-                            <p>200</p>
-                        </div>
-                        <div class="b">
-                            <img th:src="@{/board/images/ssmsg.png}" alt="">
-                            <p>200</p>
+                <th:block th:if="${boardList != null and boardList.size()>0}" th:each="board : ${boardList}">
+                    <div class="slist_img">
+                        <img class="a" th:src="@{/board/getBoardThum (boardnum=${board.boardnum})}" alt="">
+                        <div class="link">
+                            <div class="b">
+                                <img src="/images/ssheart.png" alt="">
+                                <p>[[${board.likes}]]</p>
+                            </div>
+                            <div class="b">
+                                <img src="/images/ssmsg.png" alt="">
+                                <p>[[${board.reply}]]</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </th:block>
             </div>
         </div>
     </section>

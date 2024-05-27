@@ -10,4 +10,7 @@
     <select id="followList">
         select * from follow where user=#{user}
     </select>
+    <select id="followerList">
+        select * from follow where writer=#{writer}
+    </select>
 </mapper>

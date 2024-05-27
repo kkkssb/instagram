@@ -7,4 +7,7 @@
     <select id="findByBoardnum">
         select * from boardfile ORDER BY boardnum DESC;
     </select>
+    <select id="getBoardThum">
+        select * from boardfile where boardnum=#{boardnum} limit 1;
+    </select>
 </mapper>

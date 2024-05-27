@@ -101,6 +101,23 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
+    public List<BoardDTO> getboardByName(String nickName) {
+        return boardMapper.getboardByName(nickName);
+    }
+
+    @Override
+    public ResponseEntity<Resource> getBoardThum(Long boardnum) throws Exception {
+        String Systemname =  boardFileMapper.getBoardThum(boardnum).getSystemname();
+        Path path = Paths.get(saveFolder+Systemname);
+        String contentType = Files.probeContentType(path);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
+
+        return new ResponseEntity<>(resource,headers,HttpStatus.OK);
+    }
+
+    @Override
     public List<BoardFileDTO> getBoardImg() {
         return boardFileMapper.findByBoardnum();
     }
@@ -147,8 +164,17 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public boolean registRelpy(ReplyDTO replyDTO) {
-        return boardReplyMapper.registReply(replyDTO)==1;
+    public boolean registRelpy(ReplyDTO replyDTO,Long boardnum) {
+        boolean registReply = boardReplyMapper.registReply(replyDTO)==1;
+        boolean replyCntUp = boardMapper.replyCntUp(boardnum)==1;
+        return registReply&&replyCntUp;
+    }
+
+    @Override
+    public boolean removeReply(String nickName, int replynum,Long boardnum) {
+        boolean removeReply = boardReplyMapper.removeReply(nickName,replynum)==1;
+        boolean replyCntDown = boardMapper.replyCntDown(boardnum)==1;
+        return removeReply&&replyCntDown;
     }
 
     @Override
@@ -162,11 +188,6 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public boolean removeReply(String nickName, int replynum) {
-        return boardReplyMapper.removeReply(nickName,replynum);
-    }
-
-    @Override
     public List<LikeDTO> getLikeList() {
         return boardLikeMapper.likeList();
     }
@@ -174,5 +195,10 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public List<FollowDTO> getFollowlist(String user) {
         return boardFollowMapper.followList(user);
+    }
+
+    @Override
+    public List<FollowDTO> getFollowerlist(String writer) {
+        return boardFollowMapper.followerList(writer);
     }
 }

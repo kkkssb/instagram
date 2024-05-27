@@ -12,17 +12,19 @@ public interface BoardService {
     boolean regist(BoardDTO boardDTO);
     boolean saveFile(BoardDTO boardDTO, MultipartFile[] files) throws IOException;
     List<BoardDTO> getboard();
+    List<BoardDTO> getboardByName(String nickName);
+    ResponseEntity<Resource> getBoardThum(Long boardnum)throws Exception;
     List<BoardFileDTO> getBoardImg();
     ResponseEntity<Resource> getBordImgs(String systemname) throws Exception;
     boolean clickLike(String nickName,Long boardnum);
     boolean cancelLike(String nickName,Long boardnum);
     boolean follow(String user,String writer);
     boolean cancelFollow(String user,String writer);
-    boolean registRelpy(ReplyDTO replyDTO);
+    boolean registRelpy(ReplyDTO replyDTO,Long boardnum);
     List<ReplyDTO> getReplyList(Long boardnum);
     boolean removeBoard(String user,Long boardnum);
-    boolean removeReply(String user,int replynum);
+    boolean removeReply(String user,int replynum,Long boardnum);
     List<LikeDTO> getLikeList();
     List<FollowDTO> getFollowlist(String user);
-
+    List<FollowDTO> getFollowerlist(String writer);
 }

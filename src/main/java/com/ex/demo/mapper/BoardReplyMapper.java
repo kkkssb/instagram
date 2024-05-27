@@ -10,5 +10,5 @@ import java.util.List;
 public interface BoardReplyMapper {
     int registReply(ReplyDTO replyDTO);
     List<ReplyDTO> getReplyList(Long boardnum);
-    boolean removeReply(String nickName,int replynum);
+    int removeReply(String nickName,int replynum);
 }

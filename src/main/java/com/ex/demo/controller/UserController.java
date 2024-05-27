@@ -1,7 +1,7 @@
 package com.ex.demo.controller;
 
-import com.ex.demo.domain.dto.UserDTO;
-import com.ex.demo.domain.dto.UserFileDTO;
+import com.ex.demo.domain.dto.*;
+import com.ex.demo.service.BoardService;
 import com.ex.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user/*")
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private BoardService boardService;
 
     @GetMapping("join")
     public String join(){
@@ -75,9 +78,19 @@ public class UserController {
     public String mypage(HttpServletRequest req,Model model){
         String nickName = (String) req.getSession().getAttribute("loginUser");
         UserDTO user=userService.userInfo(nickName);
+        if (user == null) {
+            return "redirect:/user/login";
+        }
         UserFileDTO userfile = userService.userfileInfo(user.getIdx());
+        List<BoardDTO> boardList = boardService.getboardByName(nickName);
+        System.out.println(boardList);
+        List<FollowDTO> following = boardService.getFollowlist(nickName);
+        List<FollowDTO> follower = boardService.getFollowerlist(nickName);
+        model.addAttribute("boardList", boardList);
         model.addAttribute("user", user);
         model.addAttribute("userfile", userfile);
+        model.addAttribute("following", following);
+        model.addAttribute("follower", follower);
         return "/user/mypage";
     }
 

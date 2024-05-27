@@ -18,6 +18,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/board/*")
 public class BoardController {
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -73,6 +74,10 @@ public class BoardController {
         System.out.println(boardService.getBoardImg());
         return "/board/home";
     }
+    @GetMapping("getBoardThum")
+    public ResponseEntity<Resource> getBoardThum(Long boardnum) throws Exception {
+        return boardService.getBoardThum(boardnum);
+    }
     @GetMapping("getBImgs")
     public ResponseEntity<Resource> getBoardImgs(String systemname) throws Exception {
         return boardService.getBordImgs(systemname);
@@ -127,7 +132,7 @@ public class BoardController {
         replyDTO.setNickName(loginUser);
         replyDTO.setBoardnum(boardnum);
         replyDTO.setContents(text);
-        if(boardService.registRelpy(replyDTO)){
+        if(boardService.registRelpy(replyDTO,boardnum)){
             System.out.println("댓글 등록 완료");
         }
         return ResponseEntity.ok("댓글이 성공적으로 등록되었습니다.");
@@ -150,12 +155,13 @@ public class BoardController {
             return ResponseEntity.badRequest().body("fail");
         }
     }
-    @PostMapping(value = "/removeReply/{user}/{replynum}")
+    @PostMapping(value = "/removeReply/{user}/{replynum}/{boardnum}")
     public ResponseEntity<String> removeReply(
             @PathVariable("user") String loginUser,
-            @PathVariable("replynum") int replynum
+            @PathVariable("replynum") int replynum,
+            @PathVariable("boardnum") Long boardnum
     ) {
-        if (boardService.removeReply(loginUser,replynum)) {
+        if (boardService.removeReply(loginUser,replynum,boardnum)) {
             System.out.println("댓글 삭제 완료");
             return ResponseEntity.ok("success");
         } else {

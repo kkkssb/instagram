@@ -9,4 +9,5 @@ import java.util.List;
 public interface BoardFileMapper {
     int saveFile(BoardFileDTO boardFileDTO);
     List<BoardFileDTO> findByBoardnum();
+    BoardFileDTO getBoardThum(Long boardnum);
 }

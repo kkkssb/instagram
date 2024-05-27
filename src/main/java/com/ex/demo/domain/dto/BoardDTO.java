@@ -8,6 +8,7 @@ public class BoardDTO {
     private String contents;
     private String nickName;
     private int likes;
+    private int reply;
     private String date;
     private String modify;
 }

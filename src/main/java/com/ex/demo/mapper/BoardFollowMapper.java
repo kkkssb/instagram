@@ -10,5 +10,6 @@ import java.util.List;
 public interface BoardFollowMapper {
     int follow(String user,String writer);
     int cancelFollow(String user,String writer);
-    List<FollowDTO> followList(String user);
+    List<FollowDTO> followList(String user);//로그인유저가 팔로우하는사람 (user=로그인유저)
+    List<FollowDTO> followerList(String writer);//로그인유저를 팔로우하는사람
 }

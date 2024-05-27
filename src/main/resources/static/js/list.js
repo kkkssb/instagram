@@ -69,10 +69,10 @@ const registReply = (loginUser,boardnum,text, callback) => {
                	});
                };
 //댓글 지우기
-const removeReply = (loginUser,replynum, callback) => {
+const removeReply = (loginUser,replynum,boardnum, callback) => {
                	$.ajax({
                		type:"POST",
-               		url:"/board/removeReply/"+loginUser+"/"+replynum,
+               		url:"/board/removeReply/"+loginUser+"/"+replynum+"/"+boardnum,
                		success:function(result){
                			callback(result);
                		}
@@ -241,9 +241,10 @@ const copyStoryForm = boards => {
                 let modify = document.querySelector(findTag1+".modifyR");
 
                 remove.addEventListener("click", () => {
+                console.log("댓글삭제")
                 //  e.preventDefault();
                     //댓글 지우는 함수 호출
-                    removeReply(loginUser, data[i].replynum, result => {
+                    removeReply(loginUser, data[i].replynum,boardnum, result => {
                         re.remove();
                         data.length--
                         seeAll.innerHTML="댓글"+data.length+"개 모두보기"; //게시글 좋아요 개수
@@ -275,6 +276,7 @@ const copyStoryForm = boards => {
 		getLikeList(data => {
 		    for(let i=0; i<data.length; i++){
 		        if(boardnum == data[i].boardnum && loginUser === data[i].nickName){
+		                console.log("하트"+data[i].nickName)
 		               mthrt.style.display = "none";
                        fullhrt.style.display = "block";
                 }
