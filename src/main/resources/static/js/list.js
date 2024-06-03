@@ -313,7 +313,7 @@ const copyStoryForm = boards => {
             Follow(loginUser, writer, result => {
                let check = document.querySelectorAll("."+writer);
                if(check){
-               	    followBtn((writer), true);
+               	    followBtn(writer, true);
                }
 
             });
@@ -323,7 +323,7 @@ const copyStoryForm = boards => {
             cancelFollow(loginUser, writer, result => {
                  let check = document.querySelectorAll("."+writer);
                  if(check){
-                    followBtn((writer), false);
+                    followBtn(writer, false);
                  }
             });
         });
