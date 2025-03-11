@@ -4,3 +4,6 @@
 - 댓글 작성, 삭제
 - 좋아요 클릭 시 좋아요 갯수 변경
 - 팔로우 클릭 시 팔로잉 상태 변경
+## 기술 스택
+
+springboot, intelli j , java, mysql , mybatis , javascript , thymeleaf.
